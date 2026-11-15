@@ -18,3 +18,8 @@ env/
 .DS_Store
 Thumbs.db
 
+# Intermediate performance outputs
+results/performance/*.prof
+results/performance/*.log
+results/performance/paired_full_*.csv
+results/performance/original_baseline/
