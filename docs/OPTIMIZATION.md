@@ -1,25 +1,20 @@
-# Optimization of the logistic-misspecification simulation
+# Changes made to the simulation
 
-## Scope and statistical target
+The aim of this project is to make the Unit 2 simulation faster while keeping the statistical problem the same. The DGPs, treatment probability of 0.75, population sizes and number of replicates are unchanged. The population is still held fixed across the 1,000 treatment randomizations for each setting.
 
-The estimands, DGPs, treatment probability 0.75, population sizes, and 1,000
-randomizations per population remain unchanged. The original Unit 2 sources are
-preserved in `baseline/`. The new implementation uses unpenalized maximum
-likelihood; it does not replace the MLE with ridge regression, clipping, or a
-pseudocount estimator. It retains the original three outputs and CSV schema.
+The main changes are in `src/optimized.py` and `src/runner.py`. The original code is kept for comparison.
 
-A fresh population is drawn once per DGP/population-size combination and reused
-for all treatment assignments. Vectorizing independent population draws across
-replicates would change that design and is deliberately avoided.
+## 1. Simplifying the logistic regression calculation
 
-## 1. Specialized optimization algorithm (algorithmic improvement)
+### Problem
 
-**Problem.** The profile attributes most runtime to estimation: statsmodels
-model construction, repeated constant-column checks, the Newton optimizer,
-and general-purpose fitting infrastructure. This study needs only three
-coefficients and fitted probabilities; it does not use covariance estimates.
+The profiler showed that most of the time was spent in the estimation function. The original code uses statsmodels to fit a logistic regression in every replicate. For this simulation, only the treatment coefficient and fitted probabilities are needed, not standard errors or the other model output.
 
-**Before** (`baseline/methods.py`):
+### Change
+
+The new version calculates the Newton updates directly for the three regression coefficients. It fits the same unpenalized logistic model.
+
+Before:
 
 ```python
 exog = sm.add_constant(np.column_stack((X, Z)))
@@ -27,7 +22,7 @@ model = sm.Logit(Y_obs, exog).fit(disp=0, method='newton')
 beta_hat_2 = model.params[1]
 ```
 
-**After** (`src/optimized.py`, simplified):
+After, showing the main calculation:
 
 ```python
 A = np.column_stack((np.ones(len(X)), X, z))
@@ -39,194 +34,156 @@ step = np.linalg.solve(H, g)
 beta = beta - scale * step
 ```
 
-For negative log likelihood
-`L(beta) = sum(log(1 + exp(A_i beta)) - y_i A_i beta)`, the gradient is
-`A.T (p-y)` and Hessian is `A.T diag(p(1-p)) A`. The Hessian is positive
-semidefinite, and a full-rank nonseparated fit has a unique finite optimum.
-A linear solve replaces an explicit inverse; no covariance matrix or rich model
-object is constructed. Convergence requires both a small parameter step and a
-small normalized score. A backtracking step checks that loss does not increase.
+Here, `g` is the gradient and `H` is the Hessian of the negative log likelihood. The code solves a linear system to find the Newton step. If the full step increases the loss, it tries a smaller step. It stops only when both the parameter change and the gradient divided by n are small.
 
-**Trade-offs.** Maintaining a dedicated solver is more work than calling
-statsmodels. It supports this binary three-column model only, not arbitrary
-formulas, weights, offsets, standard errors, or robust inference. Regression
-tests against statsmodels are therefore essential. The extra stability checks
-also cost time, and speedups need not grow with n.
+### Effect and limitation
 
-## 2. Remove redundant counterfactual design matrices (array programming)
+This avoids creating a full statsmodels result object and calculating output that is not used. However, the new code is specific to this model and needs more checking than a standard library call. The convergence checks also take time. The combined serial changes reduce the median full-study runtime from 11.612 to 10.300 seconds. The effect of this change alone was not timed separately.
 
-**Problem.** The original repeats constant detection and allocates two n-by-3
-counterfactual arrays in every replicate.
+## 2. Avoiding repeated design matrices
 
-**Before:**
+### Problem
+
+The original code creates two more design matrices in every replicate to predict outcomes with everyone treated and everyone untreated. It also repeatedly checks which columns are constant.
+
+Before:
 
 ```python
-exog_T = sm.add_constant(np.column_stack((np.ones_like(X), Z)), has_constant='add')
-exog_C = sm.add_constant(np.column_stack((np.zeros_like(X), Z)), has_constant='add')
+exog_T = sm.add_constant(
+    np.column_stack((np.ones_like(X), Z)), has_constant='add')
+exog_C = sm.add_constant(
+    np.column_stack((np.zeros_like(X), Z)), has_constant='add')
 p_T = model.predict(exog_T)
 p_C = model.predict(exog_C)
 ```
 
-**After:**
+### Change
+
+These linear predictors can be calculated directly using arrays:
 
 ```python
 eta_c = beta[0] + beta[2] * z
 eta_t = eta_c + beta[1]
 ```
 
-The direct array formulas give the same linear predictors without scanning or
-allocating two design matrices. Broadcasting `w[:, None] * A` computes the
-Hessian without constructing an n-by-n diagonal matrix. This is an O(n)
-implementation for fixed parameter dimension. Two n-by-3 float64 matrices
-would occupy 48n bytes (240,000 bytes at n=5,000); this particular allocation is
-removed, but this is not a measured net peak-memory saving because the new
-solver has its own arrays. Original code already vectorized many operations;
-there was no reason to replace every remaining simulation loop.
+The stable probability calculation described below then gives the plug-in estimate. Also, `w[:, None] * A` multiplies each row of the design matrix by its weight without creating a large diagonal matrix.
 
-## 3. Stable probabilities, standardized covariate, explicit failures
+### Effect and limitation
 
-**Problem.** The original hides every fitting warning and catches every
-exception, does not check the convergence flag, and forms odds before taking
-logs. Near separation it can return large unconverged coefficients. Very large
-covariate scales can make the Hessian ill conditioned.
+This removes two n-by-3 arrays from the prediction step. With 64-bit numbers, those two arrays alone would use 240,000 bytes at n = 5,000. This is not a measurement of the total memory saved, since the new fitting code also uses temporary arrays.
 
-**Before:**
+The formulas are shorter and avoid repeated work, but they depend on the particular design matrix in this study. They would need to be changed if more covariates were added. Many parts of the original code already use NumPy arrays, so the change is mainly to remove unnecessary calculations.
+
+## 3. Making the calculations more stable
+
+### Problem
+
+The original code suppresses fitting warnings and does not check whether the model converged. It can therefore return a finite estimate even when the fit has not converged. Calculating odds directly can also be problematic when probabilities are very close to zero or one.
+
+Before:
 
 ```python
-with warnings.catch_warnings():
-    warnings.simplefilter('ignore')
-    model = sm.Logit(Y_obs, exog).fit(disp=0, method='newton')
-plugin_delta = np.log(alpha_T_tilde/(1-alpha_T_tilde)) - np.log(alpha_C_tilde/(1-alpha_C_tilde))
+warnings.simplefilter('ignore')
+log_odds = np.log(alpha / (1 - alpha))
 ```
 
-**After:**
+### Change
+
+The covariate is standardized before fitting. This changes the intercept and covariate coefficient but leaves the treatment coefficient and predictions unchanged. The loss and probabilities are calculated with functions that work better for extreme values:
 
 ```python
 z = (Z - Z.mean()) / Z.std()
 loss = np.sum(np.logaddexp(0, eta) - y * eta)
 w = expit(eta) * expit(-eta)
+```
+
+For the plug-in estimate, the marginal log odds are calculated as:
+
+```python
 log_odds = (logsumexp(-np.logaddexp(0, -eta))
             - logsumexp(-np.logaddexp(0, eta)))
 ```
 
-The last expression is exactly `log(mean(p)) - log(mean(1-p))`: the two
-`log(n)` terms cancel. It avoids rounding a probability to one before computing
-its complement and avoids exponentiating large positive predictors.
-Standardizing Z only reparameterizes the intercept/covariate coefficient;
-the treatment coefficient and counterfactual predictions are invariant.
+This is another way to calculate `log(mean(p)) - log(mean(1-p))`. The two factors of n cancel. It avoids subtracting a probability rounded to one from one, and avoids taking the exponential of a large positive number.
 
-The solver reports `singular_design`, `constant_outcome`, `ill_conditioned`,
-`line_search_failed`, or `nonconverged` when appropriate. Failed MLE and plug-in
-values are NaN; the ITT value remains available if its two arm proportions lie
-strictly between 0 and 1. The default return keeps the original tuple API;
-`diagnostics=True` additionally returns status and iteration information.
-A condition-number threshold of 1e12 and a 60-iteration cap are safeguards,
-not mathematical proofs of separation. Extremely difficult but finite fits
-can be rejected; the failure log makes this visible.
+The code also checks for an empty treatment arm, constant outcomes, an ill-conditioned Hessian and failure to converge. A failed fit returns missing MLE and plug-in estimates. The ITT estimate is still returned when it is defined. Using `diagnostics=True` also gives the reason for failure and the number of iterations.
 
-`make stability-check` instruments a copy of the original source to expose its
-suppressed warnings, swallowed exceptions, and convergence flag. It changes
-only observation of failures, not its fitting arithmetic. Raw messages and
-conditions are in `stability_events.json`; aggregate counts are in
-`stability_summary.csv`. Repeated warnings within a fit count as multiple
-warning events, so event counts can exceed replicate counts.
+### Effect and limitation
 
-## 4. Reproducible scenario-level processes (parallelization)
+At n = 20, the check found 12 problematic fits for each DGP out of 100 replicates. The original code returned finite estimates for some nonconverged fits. The new code flags these cases instead. At the original population sizes, neither version had a problem in the 800 checked fits.
 
-**Problem.** The original nests serial loops and calls `np.random.seed(None)`
-in each DGP/assignment call. That erases the intended top-level seed.
+The new checks do not solve separation or make an undefined estimate exist. The 60-iteration limit and condition-number cutoff of 1e12 are practical checks, not proofs that a finite MLE cannot exist. A difficult but valid fit could also be rejected. The checks add time, which partly offsets the speed gained elsewhere.
 
-**Before:**
+## 4. Reproducible simulation and parallel execution
+
+### Problem
+
+The original code runs all scenarios one after another. It also resets the random seed inside the data-generation and treatment functions. Without explicit seeds, this prevents the full study from being reproducible.
+
+Before:
 
 ```python
 np.random.seed(SEED)
-Z, Y_C, Y_T = generate_freedman_population(n)  # internally seed(None)
-X, Y_obs = randomize_treatment(Y_C, Y_T)      # internally seed(None)
+Z, Y_C, Y_T = generate_freedman_population(n)
+X, Y_obs = randomize_treatment(Y_C, Y_T)
 ```
 
-**After** (`src/runner.py`):
+### Change
+
+The new runner creates seeds for each scenario and replicate and passes them to the existing functions:
 
 ```python
 seq = np.random.SeedSequence([seed, int(dgp == 'nonlinear'), n])
 seeds = seq.generate_state(reps + 1)
 Z, yc, yt = gen(n, seed=int(seeds[0]))
 x, y = randomize_treatment(yc, yt, seed=int(seeds[rep + 1]))
+```
+
+The scenarios can also run in separate processes:
+
+```python
 with ProcessPoolExecutor(max_workers=workers) as pool:
     groups = list(pool.map(scenario, tasks))
 ```
 
-Explicit seeds preserve the original random-number algorithms while making
-scenario and replicate identities reproducible. Processes parallelize the
-eight DGP/n scenarios and `map` preserves their order. Reproducibility does not
-depend on task scheduling or worker count. BLAS uses one thread per process.
+There are eight scenarios: two DGPs and four population sizes. The seeds do not depend on which worker runs a scenario. Thus, using one or two workers produces the same results. Numerical-library threads are limited to one per worker to avoid using too many threads at once.
 
-**Trade-offs.** Process startup, serialization and load imbalance limit speedup.
-Only eight tasks exist, and n=5,000 tasks dominate. More than eight workers
-cannot help this strategy. Processes use more memory. The implementation is
-not thread-safe through its legacy global RNG calls, so it uses processes,
-not threads. Serial and parallel results are tested for exact equality.
+### Effect and limitation
 
-## Validation and changes in results
+Two workers reduce the median runtime from 10.300 seconds for optimized serial execution to 6.667 seconds, a speedup of 1.54x. Compared with the original serial version, the speedup is 1.74x.
 
-`tests/test_regression.py` compares both implementations on 80 identical-input
-fits over both DGPs and every original n, with absolute/relative tolerance
-1e-7. It also tests empty treatment arms, constant outcomes, rank deficiency,
-complete separation, affine covariate rescaling, invalid data, and repeated
-serial/parallel execution. The original three tests are retained.
+The speedup is less than 2x because starting processes and collecting their results takes time. The scenarios also take different amounts of time. Parallel execution uses more memory, and using more workers than the eight scenarios would not help this approach.
 
-The full benchmark compares all 8,000 paired rows and reports finite-value
-agreement separately from finite/nonfinite mismatches in `full_regression.json`.
-These paired checks are stronger than a two-sample distribution test here:
-any discrepancy can be attributed to implementation rather than different data.
-On separated/unconverged fits the optimized code intentionally returns missing
-MLE/plug-in values where the original may return an unreliable finite result.
-Those edge cases are not claimed to be numerically identical.
+## Checking the results
 
-Old supplied CSVs will differ from the new reproducible runs because the Unit 2
-driver reseeded from entropy. The newly timed original run is also a fresh draw.
-The fair timing comparison uses the explicitly seeded common driver for both
-engines; it does not compare different sets of populations.
+The original and optimized methods were compared using exactly the same data. This is important because different simulated datasets could otherwise explain differences in the estimates.
 
-## Measured performance and lessons
+The regression tests compare 80 fits over both DGPs and all four original population sizes, using a tolerance of 1e-7. Other tests check reproducibility, serial versus parallel execution, empty treatment arms, constant outcomes, rank deficiency, separation, rescaling the covariate and invalid inputs. All 18 tests passed.
 
-See the measured appendix below and `docs/BASELINE.md`. Profiler times include
-instrumentation overhead and must not be substituted for unprofiled benchmark
-wall times. The benchmark includes DGPs, estimators and DataFrame construction;
-parallel timings include process startup/communication. CSV writing occurs
-after the timer. All three repetitions and the environment are retained.
+The full benchmark also compares all 8,000 replicates:
 
-The main lesson is to inspect total cost: repeated model/design setup can be
-material even for a small logistic model. Numerical safeguards and stable
-log-probability reductions are useful but not free. Algorithm specialization
-and parallelization must be assessed with unprofiled wall time and correctness
-checks rather than assumed to help. We did not add GPU/JIT dependencies or
-batch all fits into a large tensor; these add complexity and can substantially
-increase memory for a modest study. The measured gains are for the combined
-changes, not isolated causal contributions from each optimization.
+| Estimate | Largest absolute difference |
+|---|---:|
+| MLE treatment coefficient | 2.22e-15 |
+| Plug-in estimate | 4.11e-15 |
+| ITT estimate | 8.88e-16 |
 
-## Measured appendix
+All estimates were finite in this comparison, and all differences were below 1e-7. The serial and two-worker optimized results were exactly equal after reading the saved CSVs. The summary is in `results/performance/full_regression.json`.
 
-| Implementation | Median (s) | Min-max (s) | Speedup vs baseline |
-|---|---:|---:|---:|
-| baseline, 1 worker(s) | 11.612 | 11.553-11.631 | 1.00x |
-| optimized, 1 worker(s) | 10.300 | 10.296-10.875 | 1.13x |
-| optimized, 2 worker(s) | 6.667 | 6.388-7.105 | 1.74x |
+For the difficult datasets, identical answers are not always expected. The new code returns missing values when the original returns an unreliable finite estimate from a nonconverged fit. Also, the old Unit 2 CSVs differ from the new simulation because the old program did not correctly preserve its random seed.
 
-Serial time decreased by 11.3%; two-worker time decreased
-by 42.6% relative to serial baseline. Two workers give
-1.54x speedup relative to optimized serial, below ideal 2x.
-For this workload the process implementation gives the larger practical gain;
-the specialized serial solver provides only a modest net improvement once
-its stability safeguards are included. No per-change ablation was performed.
+## Overall performance and lessons
 
-Across 8,000 paired fits, every value is finite for both implementations and
-all values match within absolute tolerance 1e-7. Maximum absolute differences:
-MLE 2.22e-15, plug-in
-4.11e-15, ITT
-8.88e-16. There are zero finite/nonfinite
-mismatches. The supplied regression suite has 18 passing tests.
+| Version | Median time for 8,000 replicates (seconds) | Speedup over original serial version |
+|---|---:|---:|
+| Original, serial | 11.612 | 1.00x |
+| Optimized, serial | 10.300 | 1.13x |
+| Optimized, two workers | 6.667 | 1.74x |
 
-The stability audit finds 24 problematic random fits across the two n=20
-conditions. The optimized version flags them rather than trusting finite
-unconverged coefficients. Its zero emitted warnings does not mean zero failed
-fits. No convergence issue was observed in the 800 audit fits at original n.
+![Comparison of runtimes](../results/performance/timing_comparison.png)
+
+These are medians of three runs. The serial improvement is about 11.3%, while the two-worker version takes about 42.6% less time than the original serial version. The timings include data generation and collecting results but exclude saving the CSV files. Details of the measurement setup are in `BASELINE.md`.
+
+Parallel execution gave the larger improvement in these measurements. The profiler also showed that repeatedly setting up design matrices took more time than might be expected for such a small model. On the other hand, improving numerical stability has a cost: in the optimized profile, the stable marginal-log-odds calculation took 0.353 seconds out of 1.093 seconds in total.
+
+The main lesson is that a change should be checked for both speed and correctness. A shorter calculation is useful only if it still gives the intended estimate. The overall gains are measured here, but the contribution of every individual change was not measured separately. The optional extensions were not attempted.

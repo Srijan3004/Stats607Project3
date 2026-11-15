@@ -1,17 +1,15 @@
-# Final validation
+# Checks on the completed project
 
-- All 18 tests passed (`results/performance/test_results.txt`).
-- All 8,000 paired baseline/optimized replicates agree within 1e-7.
-- Full serial and two-worker optimized CSVs are exactly identical after CSV parsing.
-- Final data files each contain 4,000 rows and match the benchmark output.
-- All five preserved source files match the upload byte-for-byte; SHA-256 hashes
-  are recorded in `results/performance/baseline_source_sha256.json`.
-- The required profiling, complexity, benchmark, parallel and stability targets
-  ran successfully, as did the full simulation/metrics pipeline.
-- Performance charts and rendered scientific PDFs were visually inspected.
+The following checks were completed in the environment used for the reported results:
 
-One test-session warning comes from the host's unrelated pytest/anyio plugin
-(deprecated pytest API). It is not a simulation numerical warning or test failure.
+- All 18 tests passed. The output is in `results/performance/test_results.txt`.
+- All 8,000 paired baseline and optimized results agreed within a tolerance of 1e-7.
+- The serial and two-worker optimized results were exactly equal after reading the CSV files.
+- Each final DGP data file contained 4,000 rows and matched the benchmark output.
+- The four source files in `baseline/` matched the original uploaded files. The recorded file hashes are in `results/performance/baseline_source_sha256.json`.
+- The simulation, summary plots and required Makefile commands completed successfully.
+- The performance plots and simulation plots were checked for readability.
 
-The current environment's dependency versions are in `requirements-tested.txt`;
-`requirements.txt` lists the minimal direct dependencies.
+The test output includes one warning from a pytest plugin about a deprecated Python interface. It is not a numerical warning from the simulation and did not cause a test to fail.
+
+The required packages are listed in `requirements.txt`. The versions used for the recorded measurements are described in `results/performance/environment.json`. The tests and timing commands can be run again on another computer; its runtime results may differ.

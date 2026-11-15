@@ -1,133 +1,99 @@
 # Baseline performance
 
-## Study and measurement protocol
+## Simulation setup
 
-The original Unit 2 simulation has two DGPs, n = 100, 500, 1,000, 5,000,
-and 1,000 treatment randomizations per fixed population: 8,000 fits total.
-The original source was preserved byte-for-byte in `baseline/` before edits.
+This project continues my Unit 2 simulation study. There are two DGPs, Freedman and nonlinear, with population sizes 100, 500, 1,000 and 5,000. For each DGP and population size, the population is held fixed and treatment is randomized 1,000 times. Thus, the full study has 8,000 replicates.
 
-The full original simulation took **14.749 seconds** in
-this environment. Freedman: 7.435 s;
-nonlinear: 7.309 s. This is a directly measured
-run of the submitted driver, with only its output directory redirected. It
-includes DGP generation, fitting, progress reporting, DataFrame creation and
-CSV output; interpreter imports and subsequent metrics/plot generation are
-excluded. This is the runtime of the entire simulation, not a scaled pilot.
-The original run has 0 nonfinite values in each of its three estimator columns.
+The original code is kept in `baseline/` so that the changes can be compared with it.
 
-The original internally calls `np.random.seed(None)` and suppresses all fitting
-warnings. Its top-level seed therefore does not reproduce its old output, and
-absence of printed warnings is not evidence of convergence. The original
-CSV results and timer are in `results/performance/original_baseline/` and
-`baseline_full.json`. A separate instrumented audit below exposes failures.
+## Runtime of the original code
 
-For a fair performance comparison, both estimators also run through the same
-explicitly seeded driver. Each timed run covers all 8,000 fits; three repetitions
-alternate execution order. The table uses medians. Timers exclude CSV writing,
-imports and warm-up, but include DataFrame construction and process overhead.
-This explains why these times are not directly interchangeable with the
-original-driver timer above.
+The full original simulation took **14.749 seconds** in the environment used for these measurements.
 
-| Implementation | Median (s) | Min-max (s) | Speedup vs baseline |
-|---|---:|---:|---:|
-| baseline, 1 worker(s) | 11.612 | 11.553-11.631 | 1.00x |
-| optimized, 1 worker(s) | 10.300 | 10.296-10.875 | 1.13x |
-| optimized, 2 worker(s) | 6.667 | 6.388-7.105 | 1.74x |
-
-![Full-study wall times](../results/performance/timing_comparison.png)
-
-Environment: Python 3.12.14, NumPy 2.3.5,
-SciPy 1.17.0, pandas 2.2.3, statsmodels 0.15.0.
-Platform: Linux-6.18.57-x86_64-with-glibc2.41. The process sees 9 logical CPUs;
-that does not guarantee exclusive access or equivalent physical cores.
-BLAS/OpenMP/MKL thread limits are one. Timings are machine-specific and no
-claims are made about universal parallel scaling. Raw values are in
-`benchmark.csv`; software/platform details are in `environment.json`.
-
-## Runtime profiling
-
-`make profile` profiles 400 fits: 100 replicates for each DGP at n=1,000 and
-n=5,000, using the seeded common driver and original estimator.
-The cumulative-time profile identifies estimation as the bottleneck:
-
-| Original component | Calls | Cumulative seconds |
+| DGP | Replicates | Time (seconds) |
 |---|---:|---:|
-| Full representative run | 1 | 1.125 |
-| estimate_effects | 400 | 1.093 |
-| Statsmodels Logit.fit (outer call) | 400 | 0.498 |
-| add_constant | 1,200 | 0.329 |
-| Logit initialization (outer call) | 400 | 0.174 |
-| Treatment assignment | 400 | approximately 0.02 |
+| Freedman | 4,000 | 7.435 |
+| Nonlinear | 4,000 | 7.309 |
+| Total, including time between the two runs | 8,000 | 14.749 |
 
-Cumulative rows overlap and must not be added. Approximately 97% of profiled
-runtime is inside estimation. Constant detection/construction is surprisingly
-expensive relative to fitting a model with only three coefficients. Full
-30-row profiles and binary cProfile files are included. Optimized total
-profiled time is 1.093 s, of which stable marginal-log-odds evaluation takes
-0.353 s. Profiling affects timings; use the unprofiled benchmark for speedup.
+This measurement includes generating data, fitting the models and saving the CSV files. It does not include importing Python packages or making the summary plots. Only the output folder was changed when running the original simulation. The timing results are saved in `results/performance/baseline_full.json`.
 
-## Complexity analysis
+All three estimators returned finite values in this run. However, the original code suppresses fitting warnings, so this alone does not establish that every fit converged. The separate warning check below looks at this more carefully.
 
-Let k be the number of Newton iterations and p=3 the fixed number of model
-coefficients. DGP and treatment generation are O(n); fitting forms the
-Hessian in O(n p^2) and solves a p-by-p system in O(p^3) per iteration.
-The original fit therefore costs O(k(n p^2+p^3)), or O(kn) for fixed p.
-Constant detection and counterfactual predictions add O(n). The optimized
-fit has the same leading order; backtracking adds O(n) per attempted step.
-No claim of a better asymptotic exponent is made. Near separation, k and the
-number of backtracking attempts can increase; the solver uses an iteration cap.
+There was also a problem with the random seed. Although the simulation sets a seed at the beginning, the data-generation and treatment-assignment functions call `np.random.seed(None)` when no seed is supplied. Therefore, running the original program again does not reproduce the same data.
 
-For R replicates and scenario sizes n_j, total serial work is approximately
-O(R sum_j k_j n_j). Working arrays cost O(n p+p^2), with O(R times number of
-scenarios) stored output rows. Parallel workers multiply working memory.
+## Where does the code spend time?
 
-`make complexity` times batches of 30 replicates for n=100 through 20,000,
-five repetitions per DGP/n/engine. DGP setup and output-row assembly are
-included; reported time is elapsed/30. At each n, medians are fitted by OLS
-on natural log time against natural log n over the full range:
+The profiler was run on a smaller study with 400 fits: 100 replicates for each DGP at n = 1,000 and n = 5,000.
 
-| DGP | Engine | Empirical log-log slope |
+| Part of the original code | Number of calls | Time including functions called inside it (seconds) |
+|---|---:|---:|
+| Whole smaller study | 1 | 1.125 |
+| `estimate_effects` | 400 | 1.093 |
+| `Logit.fit` | 400 | 0.498 |
+| `add_constant` | 1,200 | 0.329 |
+| Creating the Logit model | 400 | 0.174 |
+
+These times overlap, so they should not be added. About 97% of the measured time is spent inside `estimate_effects`. Apart from fitting the model, repeatedly creating the design matrices also takes a noticeable amount of time.
+
+The full profiler tables are in `results/performance/profile_baseline.txt` and `profile_optimized.txt`. The optimized version took 1.093 seconds under profiling, compared with 1.125 seconds for the original version. Profiling itself adds some time, so the separate benchmark is used to compare actual runtimes.
+
+## Computational complexity
+
+There are only three regression coefficients. Generating data and assigning treatment both take O(n) time. Each Newton iteration also takes O(n) time when the number of coefficients is fixed. Thus, with k iterations, fitting one model takes approximately O(kn) time. The predictions and ITT calculation add another O(n) amount of work.
+
+The optimized method has the same order of complexity. It reduces some repeated calculations, but it does not change the linear dependence on n for a fixed number of iterations. Near separation, more iterations may be needed. Checking smaller Newton steps also adds some work.
+
+For R replicates and several population sizes, the total work is approximately O(R sum_j k_j n_j). The arrays used for one fit require O(n) memory. Using several processes requires more memory because each process works on its own data.
+
+To examine this empirically, batches of 30 replicates were timed for n = 100, 250, 500, 1,000, 2,500, 5,000, 10,000 and 20,000. Each setting was repeated five times. The batch time was divided by 30, and a line was fitted to log median time against log n.
+
+| DGP | Version | Estimated slope |
 |---|---|---:|
-| freedman | baseline | 0.498 |
-| freedman | optimized | 0.501 |
-| nonlinear | baseline | 0.492 |
-| nonlinear | optimized | 0.487 |
+| Freedman | Original | 0.498 |
+| Freedman | Optimized | 0.501 |
+| Nonlinear | Original | 0.492 |
+| Nonlinear | Optimized | 0.487 |
 
-![Empirical complexity](../results/performance/complexity.png)
+![Runtime against population size](../results/performance/complexity.png)
 
-Slopes near 0.5 in this finite range do not imply O(sqrt(n)) complexity.
-An additive setup/interpreter cost plus an O(n) computation bends the log-log
-curve, and iteration counts also vary. The theoretical fixed-k large-n
-leading cost remains linear. The fitted slopes describe only the measured
-range and are not extrapolation guarantees. Both algorithms have similar
-slopes; the primary improvements affect constant factors and concurrency.
+The dashed lines show the fitted log-log relationships. The slopes are close to 0.5 over this range, but this does not mean that the algorithms have O(sqrt(n)) complexity. For smaller n, setting up each fit takes a substantial part of the total time. The number of iterations can also change with the data. The theoretical cost is still O(n) when the iteration count is fixed.
 
 ## Numerical warnings and convergence
 
-The audit runs 100 replicates for each DGP at each n in
-{20,100,500,1000,5000} (1,000 fits per engine), plus five deterministic
-stress cases. The audit population seed is 908; assignment seeds are 0-99.
-It enables the baseline's suppressed warnings, records swallowed exceptions,
-and inspects the optimizer convergence flag without changing the arithmetic.
+The original code hides warnings and catches fitting errors. For this check, a copy of that code was used with warnings enabled and errors recorded. Its model-fitting calculations were unchanged. The check also records whether statsmodels reports convergence.
 
-- At the original n values (800 audit fits per engine), neither engine has
-  fitting warnings, convergence failures or nonfinite estimator values.
-- Freedman at n=20: original has 11 nonconverged fits and 1 exception in 100
-  replicates, with 11 warning events. Optimized flags 11 ill-conditioned fits
-  and 1 singular-design fit. ITT is undefined for 12 replicates.
-- Nonlinear at n=20: original has 11 nonconverged fits and 1 exception in 100,
-  with 40 warning events. Optimized flags 10 ill-conditioned fits, 1
-  nonconverged fit and 1 singular-design fit. ITT is undefined for 11 replicates.
-- Constant-outcome stress: original returns finite coefficients despite
-  nonconvergence (19 warnings); optimized explicitly reports constant outcome.
-- Perfect-separation stress: original returns a finite unconverged fit
-  (40 warnings); optimized reports nonconvergence and missing MLE/plug-in.
-- Empty-arm and rank-deficient stresses cause original exceptions and explicit
-  optimized singular-design statuses. Both engines finish the large-covariate
-  stress without warnings; it is not claimed that baseline fails that case.
+There were 100 replicates for each DGP at n = 20, 100, 500, 1,000 and 5,000, giving 1,000 fits per version. The population seed was 908 and the treatment seeds were 0 to 99. Five additional datasets were used to check difficult cases.
 
-Optimized runs emit zero numerical warnings in this audit, but still report
-failures. This is not evidence that all possible datasets are stable. The
-nonexistent/ill-conditioned cases have not been silently converted to finite
-estimates. See `stability_summary.csv`, `stability.csv` and
-`stability_events.json` for denominators, per-replicate statuses and messages.
+At the four population sizes from the original study, there were **no warnings, failed fits or nonfinite estimates in the 800 checked fits per version**.
+
+The smaller size n = 20 gave more problems:
+
+| DGP | Original nonconverged fits | Original errors | Warning events | Fits flagged by optimized code |
+|---|---:|---:|---:|---:|
+| Freedman | 11 | 1 | 11 | 12 |
+| Nonlinear | 11 | 1 | 40 | 12 |
+
+Each row is based on 100 replicates. A fit can give several warnings, so the warning count need not equal the number of failed fits. The ITT estimate was undefined in 12 Freedman replicates and 11 nonlinear replicates.
+
+In the extra checks, the original method returned finite but nonconverged estimates for constant outcomes and perfect separation. These produced 19 and 40 warnings, respectively. The optimized method marked these fits as failed. An empty treatment arm and a rank-deficient design also led to failures. Both versions completed the large-covariate check without warnings.
+
+The optimized method gave no numerical warnings in these checks, but it still reported failed fits. It returns missing MLE and plug-in estimates when a fit is not reliable, instead of treating a large nonconverged coefficient as a valid estimate. The detailed results are in `stability_summary.csv`, `stability.csv` and `stability_events.json` under `results/performance/`.
+
+## Timing comparison
+
+For the comparison below, both versions used the same populations and treatment assignments. Each full study was run three times, alternating the order of the versions. The table gives the median and range.
+
+| Version | Median time (seconds) | Range (seconds) | Speedup over original serial version |
+|---|---:|---:|---:|
+| Original, serial | 11.612 | 11.553-11.631 | 1.00x |
+| Optimized, serial | 10.300 | 10.296-10.875 | 1.13x |
+| Optimized, two workers | 6.667 | 6.388-7.105 | 1.74x |
+
+![Comparison of full-study runtimes](../results/performance/timing_comparison.png)
+
+These timings include generating data and collecting the results, but exclude saving CSV files. The parallel timing includes starting the worker processes. This comparison also uses explicit seeds and a different simulation driver. Therefore, the original serial time here is not the same measurement as the 14.749-second run above.
+
+These measurements used Linux, Python 3.12.14, NumPy 2.3.5, SciPy 1.17.0, pandas 2.2.3 and statsmodels 0.15.0. Numerical-library threads were limited to one per process. The environment reported nine logical CPUs, but these were not necessarily available exclusively to this job. Times may differ on another computer. See `environment.json` and `benchmark.csv` for the saved details.
+
+The commands are `make baseline-full`, `make profile`, `make complexity`, `make benchmark` and `make stability-check`. The raw `.prof` files, logs and duplicate simulation CSVs are generated locally and are ignored by Git; the main tables and plots are kept in the repository.
