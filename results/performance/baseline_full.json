@@ -1,0 +1,22 @@
+{
+  "total_seconds": 14.748728307000022,
+  "conditions": [
+    {
+      "dgp": "freedman",
+      "seconds": 7.435161101999995,
+      "rows": 4000,
+      "nonfinite_mle": 0,
+      "nonfinite_plugin": 0,
+      "nonfinite_itt": 0
+    },
+    {
+      "dgp": "nonlinear",
+      "seconds": 7.308872477000023,
+      "rows": 4000,
+      "nonfinite_mle": 0,
+      "nonfinite_plugin": 0,
+      "nonfinite_itt": 0
+    }
+  ],
+  "notes": "Unmodified Unit 2 driver; output redirected. Includes computation and CSV writing, excludes interpreter imports and metrics plotting. Seed(None) remains as submitted."
+}

@@ -1,0 +1,38 @@
+         466835 function calls (465626 primitive calls) in 1.125 seconds
+
+   Ordered by: cumulative time
+   List reduced from 268 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    1.125    1.125 runner.py:33(run)
+        4    0.003    0.001    1.123    0.281 runner.py:16(scenario)
+      400    0.027    0.000    1.093    0.003 methods.py:18(estimate_effects)
+      400    0.002    0.000    0.498    0.001 discrete_model.py:2834(fit)
+      400    0.002    0.000    0.482    0.001 discrete_model.py:246(fit)
+      400    0.004    0.000    0.481    0.001 model.py:374(fit)
+      400    0.002    0.000    0.467    0.001 optimizer.py:37(_fit)
+      400    0.035    0.000    0.464    0.001 optimizer.py:457(_fit_newton)
+    23213    0.373    0.000    0.373    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+     1200    0.016    0.000    0.329    0.000 tools.py:85(add_constant)
+     1200    0.002    0.000    0.215    0.000 fromnumeric.py:2962(ptp)
+     1200    0.003    0.000    0.214    0.000 _methods.py:234(_ptp)
+      400    0.005    0.000    0.174    0.000 discrete_model.py:540(__init__)
+      400    0.001    0.000    0.167    0.000 discrete_model.py:198(__init__)
+      400    0.001    0.000    0.166    0.000 model.py:286(__init__)
+     2401    0.011    0.000    0.144    0.000 discrete_model.py:231(_check_perfect_pred)
+     9603    0.058    0.000    0.135    0.000 discrete_model.py:554(predict)
+     2801    0.007    0.000    0.122    0.000 model.py:591(hess)
+     2801    0.073    0.000    0.115    0.000 discrete_model.py:2793(hessian)
+    11204    0.008    0.000    0.109    0.000 fromnumeric.py:2589(all)
+    14005    0.020    0.000    0.108    0.000 fromnumeric.py:89(_wrapreduction_any_all)
+      400    0.002    0.000    0.097    0.000 model.py:99(__init__)
+     2401    0.005    0.000    0.097    0.000 numeric.py:2279(allclose)
+      400    0.001    0.000    0.095    0.000 model.py:142(_handle_data)
+      400    0.001    0.000    0.094    0.000 data.py:735(handle_data)
+      400    0.002    0.000    0.092    0.000 data.py:66(__init__)
+      400    0.006    0.000    0.086    0.000 data.py:130(_handle_constant)
+    10003    0.083    0.000    0.085    0.000 discrete_model.py:2597(cdf)
+     2401    0.042    0.000    0.084    0.000 numeric.py:2373(isclose)
+     2800    0.004    0.000    0.080    0.000 fromnumeric.py:69(_wrapreduction)
+
+
