@@ -1,0 +1,811 @@
+[
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 1,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 1,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 26,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 3,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 3,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 27,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 16,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 16,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 26,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 19,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 19,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 27,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 25,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 25,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 27,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 41,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 41,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 26,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 51,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 51,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 26,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 64,
+    "engine": "baseline",
+    "status": "exception",
+    "details": {
+      "converged": true,
+      "exception": "ValueError: shapes (20,3) and (2,) not aligned: 3 (dim 1) != 2 (dim 0)"
+    },
+    "warnings": []
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 64,
+    "engine": "optimized",
+    "status": "singular_design",
+    "details": {
+      "status": "singular_design",
+      "iterations": 0,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 67,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 67,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 27,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 85,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 85,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 26,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 91,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 91,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 27,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 94,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "freedman",
+    "n": 20,
+    "rep": 94,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 28,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 1,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 1,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 26,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 3,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 3,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 27,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 9,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 9,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 27,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 16,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 16,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 26,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 25,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 25,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 27,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 32,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 32,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 28,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 41,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 41,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 26,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 51,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 51,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 26,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 64,
+    "engine": "baseline",
+    "status": "exception",
+    "details": {
+      "converged": true,
+      "exception": "ValueError: shapes (20,3) and (2,) not aligned: 3 (dim 1) != 2 (dim 0)"
+    },
+    "warnings": []
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 64,
+    "engine": "optimized",
+    "status": "singular_design",
+    "details": {
+      "status": "singular_design",
+      "iterations": 0,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 65,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 65,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 27,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 73,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals",
+      "overflow encountered in exp",
+      "overflow encountered in exp"
+    ]
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 73,
+    "engine": "optimized",
+    "status": "nonconverged",
+    "details": {
+      "status": "nonconverged",
+      "iterations": 60,
+      "itt_boundary": false
+    },
+    "warnings": []
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 83,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "nonlinear",
+    "n": 20,
+    "rep": 83,
+    "engine": "optimized",
+    "status": "ill_conditioned",
+    "details": {
+      "status": "ill_conditioned",
+      "iterations": 29,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "empty_arm",
+    "n": 100,
+    "rep": 0,
+    "engine": "baseline",
+    "status": "exception",
+    "details": {
+      "converged": true,
+      "exception": "ValueError: shapes (100,3) and (2,) not aligned: 3 (dim 1) != 2 (dim 0)"
+    },
+    "warnings": []
+  },
+  {
+    "condition": "empty_arm",
+    "n": 100,
+    "rep": 0,
+    "engine": "optimized",
+    "status": "singular_design",
+    "details": {
+      "status": "singular_design",
+      "iterations": 0,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "constant_outcome",
+    "n": 100,
+    "rep": 0,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "Perfect separation or prediction detected, parameter may not be identified",
+      "Perfect separation or prediction detected, parameter may not be identified",
+      "Perfect separation or prediction detected, parameter may not be identified",
+      "Perfect separation or prediction detected, parameter may not be identified",
+      "Perfect separation or prediction detected, parameter may not be identified",
+      "Perfect separation or prediction detected, parameter may not be identified",
+      "Perfect separation or prediction detected, parameter may not be identified",
+      "Perfect separation or prediction detected, parameter may not be identified",
+      "Perfect separation or prediction detected, parameter may not be identified",
+      "Perfect separation or prediction detected, parameter may not be identified",
+      "Perfect separation or prediction detected, parameter may not be identified",
+      "Perfect separation or prediction detected, parameter may not be identified",
+      "Perfect separation or prediction detected, parameter may not be identified",
+      "Perfect separation or prediction detected, parameter may not be identified",
+      "Perfect separation or prediction detected, parameter may not be identified",
+      "Perfect separation or prediction detected, parameter may not be identified",
+      "Perfect separation or prediction detected, parameter may not be identified",
+      "Perfect separation or prediction detected, parameter may not be identified",
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals"
+    ]
+  },
+  {
+    "condition": "constant_outcome",
+    "n": 100,
+    "rep": 0,
+    "engine": "optimized",
+    "status": "constant_outcome",
+    "details": {
+      "status": "constant_outcome",
+      "iterations": 0,
+      "itt_boundary": true
+    },
+    "warnings": []
+  },
+  {
+    "condition": "rank_deficient",
+    "n": 100,
+    "rep": 0,
+    "engine": "baseline",
+    "status": "exception",
+    "details": {
+      "exception": "LinAlgError: Singular matrix"
+    },
+    "warnings": []
+  },
+  {
+    "condition": "rank_deficient",
+    "n": 100,
+    "rep": 0,
+    "engine": "optimized",
+    "status": "singular_design",
+    "details": {
+      "status": "singular_design",
+      "iterations": 0,
+      "itt_boundary": false
+    },
+    "warnings": []
+  },
+  {
+    "condition": "separated",
+    "n": 100,
+    "rep": 0,
+    "engine": "baseline",
+    "status": "nonconverged",
+    "details": {
+      "converged": false
+    },
+    "warnings": [
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "Maximum Likelihood optimization failed to converge. Check mle_retvals",
+      "overflow encountered in exp",
+      "overflow encountered in exp",
+      "overflow encountered in exp"
+    ]
+  },
+  {
+    "condition": "separated",
+    "n": 100,
+    "rep": 0,
+    "engine": "optimized",
+    "status": "nonconverged",
+    "details": {
+      "status": "nonconverged",
+      "iterations": 60,
+      "itt_boundary": false
+    },
+    "warnings": []
+  }
+]

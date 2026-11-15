@@ -1,0 +1,38 @@
+         575027 function calls (575018 primitive calls) in 1.093 seconds
+
+   Ordered by: cumulative time
+   List reduced from 212 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    1.093    1.093 runner.py:33(run)
+        4    0.002    0.001    1.091    0.273 runner.py:16(scenario)
+      400    0.488    0.001    1.063    0.003 optimized.py:14(estimate_effects)
+      800    0.101    0.000    0.353    0.000 optimized.py:67(marginal_logodds)
+     1600    0.029    0.000    0.252    0.000 _logsumexp.py:15(logsumexp)
+     1600    0.045    0.000    0.157    0.000 _logsumexp.py:201(_logsumexp)
+     2454    0.017    0.000    0.081    0.000 _linalg.py:1935(cond)
+    14162    0.017    0.000    0.053    0.000 fromnumeric.py:69(_wrapreduction)
+    24278    0.052    0.000    0.052    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+     9708    0.010    0.000    0.051    0.000 fromnumeric.py:2338(sum)
+     2454    0.030    0.000    0.048    0.000 _linalg.py:1689(svd)
+     3200    0.002    0.000    0.043    0.000 _at.py:362(set)
+     3200    0.016    0.000    0.041    0.000 _at.py:224(_op)
+     2454    0.015    0.000    0.034    0.000 _linalg.py:382(solve)
+     1600    0.010    0.000    0.032    0.000 _array_api.py:524(xp_promote)
+      400    0.024    0.000    0.024    0.000 dgps.py:34(randomize_treatment)
+     3200    0.002    0.000    0.019    0.000 _internal.py:33(wrapped_f)
+     1600    0.006    0.000    0.019    0.000 _logsumexp.py:169(_elements_and_indices_with_max_real)
+     6400    0.007    0.000    0.019    0.000 numerictypes.py:385(isdtype)
+     3200    0.006    0.000    0.017    0.000 _aliases.py:631(sign)
+     4454    0.003    0.000    0.017    0.000 fromnumeric.py:3052(max)
+      800    0.001    0.000    0.016    0.000 _arraysetops_impl.py:1060(isin)
+    10562    0.007    0.000    0.015    0.000 _ufunc_config.py:448(__enter__)
+      800    0.010    0.000    0.014    0.000 _arraysetops_impl.py:908(_in1d)
+     4454    0.003    0.000    0.013    0.000 {method 'all' of 'numpy.ndarray' objects}
+     4908    0.006    0.000    0.012    0.000 _linalg.py:207(_commonType)
+     1600    0.006    0.000    0.012    0.000 _array_api.py:471(xp_result_type)
+     3200    0.003    0.000    0.011    0.000 _aliases.py:574(isdtype)
+     1200    0.001    0.000    0.011    0.000 {method 'mean' of 'numpy.ndarray' objects}
+     4454    0.002    0.000    0.010    0.000 _methods.py:66(_all)
+
+

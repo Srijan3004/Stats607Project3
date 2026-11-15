@@ -1,0 +1,22 @@
+[
+  {
+    "dgp": "freedman",
+    "engine": "baseline",
+    "log_log_slope": 0.49789674938992773
+  },
+  {
+    "dgp": "freedman",
+    "engine": "optimized",
+    "log_log_slope": 0.5010609849896209
+  },
+  {
+    "dgp": "nonlinear",
+    "engine": "baseline",
+    "log_log_slope": 0.49161605575667416
+  },
+  {
+    "dgp": "nonlinear",
+    "engine": "optimized",
+    "log_log_slope": 0.4872900785434219
+  }
+]

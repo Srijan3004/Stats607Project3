@@ -1,0 +1,37 @@
+python3 -m pytest tests/tests.py tests/test_regression.py -v
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0 -- /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3
+cachedir: .pytest_cache
+rootdir: /workspace/scratch/ebd03c45ee84/stats607Project3
+plugins: anyio-4.14.2
+collecting ... collected 18 items
+
+tests/tests.py::test_dgp_expected_properties PASSED                      [  5%]
+tests/tests.py::test_method_correctness PASSED                           [ 11%]
+tests/tests.py::test_reproducibility PASSED                              [ 16%]
+tests/test_regression.py::test_paired_estimators[100-generate_freedman_population] PASSED [ 22%]
+tests/test_regression.py::test_paired_estimators[100-generate_nonlinear_population] PASSED [ 27%]
+tests/test_regression.py::test_paired_estimators[500-generate_freedman_population] PASSED [ 33%]
+tests/test_regression.py::test_paired_estimators[500-generate_nonlinear_population] PASSED [ 38%]
+tests/test_regression.py::test_paired_estimators[1000-generate_freedman_population] PASSED [ 44%]
+tests/test_regression.py::test_paired_estimators[1000-generate_nonlinear_population] PASSED [ 50%]
+tests/test_regression.py::test_paired_estimators[5000-generate_freedman_population] PASSED [ 55%]
+tests/test_regression.py::test_paired_estimators[5000-generate_nonlinear_population] PASSED [ 61%]
+tests/test_regression.py::test_parallel_reproducibility PASSED           [ 66%]
+tests/test_regression.py::test_degenerate[empty_arm] PASSED              [ 72%]
+tests/test_regression.py::test_degenerate[constant] PASSED               [ 77%]
+tests/test_regression.py::test_degenerate[rank] PASSED                   [ 83%]
+tests/test_regression.py::test_degenerate[separated] PASSED              [ 88%]
+tests/test_regression.py::test_covariate_rescaling PASSED                [ 94%]
+tests/test_regression.py::test_invalid_input PASSED                      [100%]
+
+=============================== warnings summary ===============================
+../../../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.
+  The CallSpec2 alias will be removed in pytest 10.
+  Update imports to use CallSpec instead.
+  See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed
+    from _pytest.python import CallSpec2
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 18 passed, 1 warning in 1.78s =========================

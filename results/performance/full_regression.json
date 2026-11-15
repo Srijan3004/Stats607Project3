@@ -1,0 +1,20 @@
+{
+  "MLE_Beta2": {
+    "paired_finite": 8000,
+    "finite_mismatch": 0,
+    "max_abs_difference": 2.220446049250313e-15,
+    "within_1e_7": 8000
+  },
+  "Plugin_Delta": {
+    "paired_finite": 8000,
+    "finite_mismatch": 0,
+    "max_abs_difference": 4.107825191113079e-15,
+    "within_1e_7": 8000
+  },
+  "ITT_Delta": {
+    "paired_finite": 8000,
+    "finite_mismatch": 0,
+    "max_abs_difference": 8.881784197001252e-16,
+    "within_1e_7": 8000
+  }
+}

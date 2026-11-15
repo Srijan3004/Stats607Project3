@@ -1,24 +1,24 @@
-.PHONY: all simulate metrics clean test
-
+PYTHON ?= python3
+WORKERS ?= 2
+REPLICATES ?= 1000
 export PYTHONPATH := src:$(PYTHONPATH)
-
+# Prevent BLAS oversubscription, including in child processes.
+export OPENBLAS_NUM_THREADS := 1
+export OMP_NUM_THREADS := 1
+export MKL_NUM_THREADS := 1
+export MPLBACKEND := Agg
+.PHONY: all simulate metrics test profile complexity benchmark parallel stability-check baseline-full evidence clean
 all: simulate metrics
-
 simulate:
-	@echo "Running simulations..."
-	python src/simulation.py
-
+	$(PYTHON) src/runner.py --replicates $(REPLICATES)
 metrics:
-	@echo "Generating metrics and figures..."
-	python src/metrics.py
-
+	$(PYTHON) src/metrics.py
 test:
-	@echo "Running unit tests..."
-	pytest tests/tests.py -v
-
+	$(PYTHON) -m pytest tests/tests.py tests/test_regression.py -v
+profile complexity benchmark stability-check baseline-full:
+	$(PYTHON) scripts/performance.py $@
+parallel:
+	$(PYTHON) src/runner.py --replicates $(REPLICATES) --workers $(WORKERS)
+evidence: baseline-full profile complexity benchmark stability-check
 clean:
-	@echo "Cleaning simulated data cache..."
-	rm -rf data/simulated/*.csv
-	rm -rf data/simulated/*.pdf
-	rm -rf tests/__pycache__
-	rm -rf src/__pycache__
+	$(PYTHON) -c "import pathlib,shutil; [shutil.rmtree(p) for p in pathlib.Path('.').rglob('__pycache__')]"
