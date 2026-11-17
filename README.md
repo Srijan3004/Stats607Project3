@@ -1,6 +1,6 @@
 # STAT 607 Project 3: High-Performance Simulation Study
 
-Optimizes the supplied Unit 2 logistic-misspecification study: two data-generating
+Optimizes the Unit 2 logistic-misspecification study: two data-generating
 mechanisms, four population sizes (100, 500, 1000, 5000), and 1,000 treatment
 randomizations per fixed population, for 8,000 replicates total.
 
