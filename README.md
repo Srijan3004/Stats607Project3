@@ -43,12 +43,6 @@ make simulate REPLICATES=10
 
 This replaces the main simulation data with the smaller run. Run `make` again to regenerate the full study.
 
-If Make uses the wrong Python installation, specify the environment directly:
-
-```bash
-make test PYTHON="$PWD/.venv/bin/python"
-```
-
 The Makefile limits numerical-library threads to one per process so that parallel workers do not each start additional threads.
 
 ## Project files
