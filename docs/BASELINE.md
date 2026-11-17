@@ -61,8 +61,6 @@ The dashed lines show the fitted log-log relationships. The slopes are close to 
 
 ## Numerical warnings and convergence
 
-The original code hides warnings and catches fitting errors. For this check, a copy of that code was used with warnings enabled and errors recorded. Its model-fitting calculations were unchanged. The check also records whether statsmodels reports convergence.
-
 There were 100 replicates for each DGP at n = 20, 100, 500, 1,000 and 5,000, giving 1,000 fits per version. The population seed was 908 and the treatment seeds were 0 to 99. Five additional datasets were used to check difficult cases.
 
 At the four population sizes from the original study, there were **no warnings, failed fits or nonfinite estimates in the 800 checked fits per version**.
