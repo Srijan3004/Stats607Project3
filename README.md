@@ -1,64 +1,81 @@
 # STAT 607 Project 3: High-Performance Simulation Study
 
-Optimizes the Unit 2 logistic-misspecification study: two data-generating
-mechanisms, four population sizes (100, 500, 1000, 5000), and 1,000 treatment
-randomizations per fixed population, for 8,000 replicates total.
+This project continues my Unit 2 simulation study on logistic model misspecification. The aim is to reduce the runtime and improve numerical stability while keeping the statistical setup unchanged.
 
-Start with **docs/BASELINE.md** and **docs/OPTIMIZATION.md**. The full checklist
-is in **docs/REQUIREMENTS.md**. All measured evidence is included under
-`results/performance/`.
+The study uses two data-generating mechanisms and four population sizes: 100, 500, 1,000 and 5,000. For each setting, the population is held fixed and treatment is randomized 1,000 times, giving 8,000 replicates in total.
 
-## Reproduce
+The baseline results are discussed in `docs/BASELINE.md`, and the changes are explained in `docs/OPTIMIZATION.md`. A checklist of the project requirements is in `docs/REQUIREMENTS.md`.
 
-Python 3.10+ recommended. From this directory:
+## Running the project
+
+From the project directory, first create and activate a Python environment and install the required packages:
 
 ```bash
-python3 -m pip install -r requirements.txt
-make test
-make all                     # full optimized simulation + original summaries/plots
-make profile
-make complexity
-make benchmark               # 3 complete runs per engine/worker configuration
-make stability-check
-make parallel WORKERS=2      # full optimized study, deterministic multiprocessing
-make baseline-full           # original Unit 2 simulation, output isolated
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 ```
 
-`make evidence` runs the five evidence-producing targets sequentially. Use
-`make simulate REPLICATES=10` for a quick toy run, but this overwrites the main
-data with a small study; run `make all` to restore full results. `PYTHON=...` may
-select a different interpreter. Make fixes BLAS/OpenMP threads to one for fair
-comparisons and avoids oversubscription with processes.
+Then run:
 
-## Files
+```bash
+make test       # run the tests
+make            # run the optimized simulation and create summaries and plots
+make evidence   # run all performance and stability checks
+```
 
-- `baseline/`: byte-for-byte copies of all five Unit 2 source modules.
-- `src/dgps.py`, `src/methods.py`, `src/simulation.py`: original code for
-  reference and regression; the default Makefile now uses `src/runner.py`.
-- `src/optimized.py`: standardized, safeguarded Newton logistic MLE and stable
-  plug-in probabilities, with no unnecessary covariance calculation.
-- `src/runner.py`: explicit per-scenario/per-replicate seeds and process workers.
-- `scripts/performance.py`: baseline timing, profiling, paired benchmarks,
-  empirical complexity, and diagnostic runs.
-- `data/`, `results/raw/`, `results/figures/`: full optimized study and the
-  original style of scientific summaries/plots.
-- `results/performance/`: raw timing/diagnostic CSVs, paired full-study estimates,
-  figures, environment metadata, and profiler evidence.
-- `docs/UNIT2_README.md`, `ADEMP.md`, `ANALYSIS.md`: original explanatory material.
-  These describe Unit 2; consult the new documentation for measured Project 3 claims.
+The checks can also be run separately:
 
-## Scientific interpretation and reproducibility
+```bash
+make baseline-full           # time the original Unit 2 simulation
+make profile                 # check where the code spends time
+make complexity              # examine runtime for different population sizes
+make benchmark               # compare original and optimized runtimes
+make stability-check         # check warnings and convergence problems
+make parallel WORKERS=2      # run the optimized simulation with two workers
+```
 
-Treatment remains randomized in both DGPs. The nonlinear DGP has model
-misspecification, not treatment confounding (some original prose used that term).
-The finite population stays fixed across treatment replicates, as in Unit 2.
-The original functions call `np.random.seed(None)` when the driver omits seeds,
-so its top-level seed did not make the full study reproducible. The new runner
-passes explicit seeds. As a result its newly generated samples need not match
-old CSVs. Baseline-versus-optimized comparisons use exactly the same inputs.
+For a quick trial, use:
 
-The original summaries use complete-case deletion across all estimator columns;
-this behavior is retained for continuity. Failure frequencies are reported
-separately; do not interpret complete-case summaries as unconditional performance
-when failures are common. Nonexistent/unconverged MLEs are recorded as missing
-rather than replaced with penalized estimates.
+```bash
+make simulate REPLICATES=10
+```
+
+This replaces the main simulation data with the smaller run. Run `make` again to regenerate the full study.
+
+If Make uses the wrong Python installation, specify the environment directly:
+
+```bash
+make test PYTHON="$PWD/.venv/bin/python"
+```
+
+The Makefile limits numerical-library threads to one per process so that parallel workers do not each start additional threads.
+
+## Project files
+
+- `baseline/`: copies of the four original Unit 2 source files.
+- `src/dgps.py`: generates the populations and treatment assignments.
+- `src/methods.py`: contains the original estimation functions.
+- `src/simulation.py`: contains the original simulation procedure.
+- `src/metrics.py`: creates summary tables and plots.
+- `src/optimized.py`: contains the modified estimation method and numerical checks.
+- `src/runner.py`: runs the simulation with explicit random seeds and optional parallel execution.
+- `scripts/performance.py`: runs the timing, profiling, complexity and stability checks.
+- `tests/`: checks the simulation and compares the original and optimized results.
+- `data/`: contains the simulation results.
+- `results/raw/` and `results/figures/`: contain summary tables and plots.
+- `results/performance/`: contains the performance results and diagnostic summaries. Some intermediate files are generated locally but ignored by Git.
+- `docs/`: explains the baseline performance, changes and validation checks.
+- `ADEMP.md` and `ANALYSIS.md`: contain the original Unit 2 discussion.
+
+## Notes on the simulation
+
+Treatment is randomized in both DGPs. The nonlinear example introduces model misspecification, not treatment confounding. For each DGP and population size, the same population is used across all treatment randomizations.
+
+The original code sets a seed at the beginning, but the functions later call `np.random.seed(None)` when no seed is passed. Therefore, the original full simulation was not reproducible. The new version passes explicit seeds to these functions.
+
+Because of this change, the new simulation data may differ from the old Unit 2 CSV files. However, the original and optimized methods use exactly the same data when their results are compared. The optimized serial and parallel runs also use the same seeds.
+
+The summary tables retain the original approach of dropping rows with a missing value in any estimator. Failed fits are reported separately in the stability checks. Thus, these summaries describe the retained replicates and should be interpreted carefully when failures are common.
+
+The recorded runtimes depend on the computer and package versions used. Running the project on another computer should reproduce the seeded study, allowing for small numerical differences, but the timings will differ.
