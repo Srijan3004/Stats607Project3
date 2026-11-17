@@ -25,7 +25,7 @@ make baseline-full           # original Unit 2 simulation, output isolated
 ```
 
 `make evidence` runs the five evidence-producing targets sequentially. Use
-`make simulate REPLICATES=10` for a quick smoke run, but this overwrites the main
+`make simulate REPLICATES=10` for a quick toy run, but this overwrites the main
 data with a small study; run `make all` to restore full results. `PYTHON=...` may
 select a different interpreter. Make fixes BLAS/OpenMP threads to one for fair
 comparisons and avoids oversubscription with processes.
