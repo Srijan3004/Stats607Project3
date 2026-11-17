@@ -32,8 +32,8 @@ comparisons and avoids oversubscription with processes.
 
 ## Files
 
-- `baseline/`: byte-for-byte copies of all five supplied Unit 2 source modules.
-- `src/dgps.py`, `src/methods.py`, `src/simulation.py`: original code retained for
+- `baseline/`: byte-for-byte copies of all five Unit 2 source modules.
+- `src/dgps.py`, `src/methods.py`, `src/simulation.py`: original code for
   reference and regression; the default Makefile now uses `src/runner.py`.
 - `src/optimized.py`: standardized, safeguarded Newton logistic MLE and stable
   plug-in probabilities, with no unnecessary covariance calculation.
