@@ -35,7 +35,7 @@ make stability-check         # check warnings and convergence problems
 make parallel WORKERS=2      # run the optimized simulation with two workers
 ```
 
-For a quick trial, use:
+For a quick toy trial, use:
 
 ```bash
 make simulate REPLICATES=10
